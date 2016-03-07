@@ -6,6 +6,7 @@
 #include "VideoRecorder.h"
 #include "VideoRecorderDlg.h"
 #include "afxdialogex.h"
+#include <math.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -49,19 +50,25 @@ END_MESSAGE_MAP()
 
 CVideoRecorderDlg::CVideoRecorderDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CVideoRecorderDlg::IDD, pParent)
+	, begin_path(_T("C:\\Users"))
 {
+	
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	//GetDlgItem(IDC_PATH)->SetWindowText(_T("C:\\Users"));
 }
 
 void CVideoRecorderDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Text(pDX, IDC_PATH, begin_path);
 }
 
 BEGIN_MESSAGE_MAP(CVideoRecorderDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_FILEPATH, &CVideoRecorderDlg::OnClickedFilepath)
+	ON_BN_CLICKED(IDC_RECORD, &CVideoRecorderDlg::OnClickedRecord)
 END_MESSAGE_MAP()
 
 
@@ -98,6 +105,7 @@ BOOL CVideoRecorderDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化代码
 	Display();
+	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -186,3 +194,107 @@ void CVideoRecorderDlg::Display()
 	GXCloseLib();*/
 }
 
+
+
+void CVideoRecorderDlg::OnClickedFilepath()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	 TCHAR szPath[MAX_PATH];
+	 BROWSEINFO br;
+	 ITEMIDLIST* pItem;
+	 CString strDir;
+ 
+
+	 br.hwndOwner = this->GetSafeHwnd();
+	 br.pidlRoot = 0;
+	 br.pszDisplayName = 0;
+	 br.lpszTitle = (LPCWSTR )" ";
+	 br.ulFlags = BIF_USENEWUI;
+	 br.lpfn = 0;
+	 br.iImage = 0;
+	 br.lParam = 0;
+ 
+	 pItem = SHBrowseForFolder(&br);
+	 if(pItem != NULL)
+	 {
+		if(SHGetPathFromIDList(pItem,szPath) == TRUE)
+		{
+			 strDir = szPath;
+		}
+
+	}
+	 SetDlgItemText (IDC_PATH ,strDir);
+}
+
+
+void CVideoRecorderDlg::OnClickedRecord()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CString str;
+	CString Path;
+	//wchar_t *path;
+	//size_t len = 0;
+	//size_t converted = 0;
+	//char *Cpath;
+	uint FPS=30;
+
+	//char path[100];
+	//int j=0;
+	GetDlgItem(IDC_PATH)->GetWindowText(Path);
+    GetDlgItem(IDC_RECORD)->GetWindowText(str);
+	
+    if (str == "开始")
+    {
+	   GetDlgItem(IDC_RECORD)->SetWindowText(_T("停止"));
+	   //开始录制
+	 
+	   for(char i=0;i<camnum;++i)
+	  {
+		   
+		  //Path=Path+_T ("\\video")+i; 
+		  //Path=Path+_T (".avi");
+		  
+		 //path = Path.GetBuffer(Path.GetLength() + 1);//数据类型转换cstring转wchar_t
+		 // Cpath=(char*)malloc(len*sizeof(char));
+		 // len = wcslen(path) + 1;
+		 // wcstombs_s(&converted, Cpath, len, path, _TRUNCATE);//wchar_t转char
+		  
+		   writer[i]=cvCreateVideoWriter( i+"out.avi" ,
+			   CV_FOURCC ('D','I','V','X'),FPS,cvSize (CAMERA_WIDTH ,CAMERA_HEIGHT ),0);
+	     // free (Cpath );
+	   }
+	   char key=0;
+	  // IplImage *pImagebuff;
+	   while(key!=27)
+	   {
+		   for(char i=0;i<camnum;i++)
+		   {
+			   IplImage *pImagebuff = cvCreateImage(cvGetSize(camQue[i].pImage), camQue[i].pImage->depth, 3);
+			   //IplImage *pImagebuff_r = cvCreateImage(cvGetSize(camQue[i].pImage), camQue[i].pImage->depth, 1);
+			  // IplImage *pImagebuff_g = cvCreateImage(cvGetSize(camQue[i].pImage), camQue[i].pImage->depth, 1);
+			   //IplImage *pImagebuff_b = cvCreateImage(cvGetSize(camQue[i].pImage), camQue[i].pImage->depth, 1);
+			   //cvSplit (pImagebuff ,pImagebuff_b ,pImagebuff_g ,pImagebuff_r ,0);
+			   //for(int z=0;z<CAMERA_HEIGHT;z++)
+				//   for(int y=0;y<CAMERA_WIDTH ;y++)
+			    //      *(pImagebuff_g->imageData+z*pImagebuff_g->widthStep+y) = *(pImagebuff_g->imageData+z*pImagebuff_g->widthStep+y)/2;
+
+			   //cvMerge (pImagebuff_b ,pImagebuff_g ,pImagebuff_r,0,pImagebuff );			
+			   cvCvtColor(camQue[i].pImage ,pImagebuff ,CV_BayerBG2BGR);
+			   cvCvtColor(pImagebuff,camQue[i].pImage  ,CV_RGB2GRAY);
+			   cvWriteFrame (writer [i],camQue[i].pImage );
+			   cvReleaseImage(&pImagebuff );
+			   //cvReleaseImage(&pImagebuff_r );
+			   //cvReleaseImage(&pImagebuff_g );
+			   //cvReleaseImage(&pImagebuff_b );
+		   }
+		   key=cvWaitKey(20); 
+	   }
+	}
+    else
+	{
+       GetDlgItem(IDC_RECORD)->SetWindowText(_T("开始"));
+	   //停止录制，保存视频
+	   for(char i=0;i<camnum;i++)
+	      cvReleaseVideoWriter (&writer[i]);
+	}
+}

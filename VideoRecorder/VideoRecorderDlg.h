@@ -1,14 +1,15 @@
 
 // VideoRecorderDlg.h : Í·ÎÄ¼þ
-#include "GxIAPI.h"
-#include <iostream>
-#include <string>
-#include <sstream>
+//#include "GxIAPI.h"
+//#include <iostream>
+//#include <string>
+//#include <sstream>
 #include "Camera.h"
 #include <vector>
 #define CAMERA_WIDTH 752
 #define CAMERA_HEIGHT 480
 #define CAMERA_EXPOTIME 65000
+#define camnum camNum
 //
 
 #pragma once
@@ -41,6 +42,10 @@ protected:
 
 public:
 	uint camNum;
+	CvVideoWriter *writer[50];
 	std::vector<CCamera> camQue;
 	void Display();
+	afx_msg void OnClickedFilepath();
+	afx_msg void OnClickedRecord();
+	CString begin_path;
 };

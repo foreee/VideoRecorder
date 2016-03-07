@@ -1,3 +1,4 @@
+#pragma once
 #include "GxIAPI.h"
 #include <cv.h>
 #include "cxcore.h"
@@ -6,7 +7,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#pragma once
+
 class CCamera
 {
 public:

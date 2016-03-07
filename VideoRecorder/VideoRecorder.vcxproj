@@ -19,7 +19,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
@@ -43,8 +43,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Pro-Software\Opencv\opencv\build\include\opencv2;D:\Pro-Software\Opencv\opencv\build\include\opencv;D:\Pro-Software\Opencv\opencv\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Pro-Software\Opencv\opencv\build\x86\vc12\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\opcv\opencv\build\x86\vc12\bin;D:\opcv\opencv\build\include;D:\opcv\opencv\build\include\opencv;D:\opcv\opencv\build\include\opencv2;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\opcv\opencv\build\x86\vc12\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
